@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>bingo</title>
+	<style type="text/css">
+		body{
+			font-size: 20px;
+			font-family: "Lucida Grande",verdana,arial,sans-serif;
+			color: black;
+			background-color: white;
+		}
+		caption,th{
+			font-family: georgia,"time new roman" ;
+		}
+		caption{
+			font-size: 18px;
+		}
+		table{
+			border-collapse: collapse;
+		}
+		th,td{
+			padding: 10px;
+			border: 2px solid #666;
+			text-align: center;
+			width: 20%;
+		}
+		#free, .pickeBG{
+			background-color: #f66;
+		}
+		.winningBG{
+			background-image: url(img/12.png);
+		}
+	</style>
+</head>
+<body>
+	<table>
+		<caption>create a bingo card</caption>
+		<tr>
+			<th>B</th>
+			<th>I</th>
+			<th>N</th>
+			<th>G</th>
+			<th>O</th>
+		</tr>
+		<tr>
+			<td id="square0">&nbsp;</td>
+			<td id="square5">&nbsp;</td>
+			<td id="square10">&nbsp;</td>
+			<td id="square14">&nbsp;</td>
+			<td id="square19">&nbsp;</td>
+		</tr>
+		<tr>
+			<td id="square1">&nbsp;</td>
+			<td id="square6">&nbsp;</td>
+			<td id="square11">&nbsp;</td>
+			<td id="square15">&nbsp;</td>
+			<td id="square20">&nbsp;</td>
+		</tr>
+		<tr>
+			<td id="square2">&nbsp;</td>
+			<td id="square7">&nbsp;</td>
+			<td id="free">free</td>
+			<td id="square16">&nbsp;</td>
+			<td id="square21">&nbsp;</td>
+		</tr>
+		<tr>
+			<td id="square3">&nbsp;</td>
+			<td id="square8">&nbsp;</td>
+			<td id="square12">&nbsp;<vtd>
+			<td id="square17">&nbsp;</td>
+			<td id="square22">&nbsp;</td>
+		</tr>
+		<tr>
+			<td id="square4">&nbsp;</td>
+			<td id="square9">&nbsp;</td>
+			<td id="square13">&nbsp;</td>
+			<td id="square18">&nbsp;</td>
+			<td id="square23">&nbsp;</td>
+		</tr>						
+	</table>
+	<p><a href="script01.html" id="reload">click here</a>to create a new card</p>
+	<script>
+			window.onload = initAll;
+			var usedNum = new Array(76);
+			function initAll(){
+				if (document.getElementById) {
+					document.getElementById('reload').onclick = anotherCard;
+					newCard();
+				}else{
+					alert("sorry,your browser doesn't sopport this script");
+				} ;
+			}
+			function newCard(){
+				for(var i = 0; i < 24;i++){
+				setSquare(i);
+				}
+			}
+			function setSquare(thisSquare){
+				var currSquare = 'square' + thisSquare;
+				var colPlace = [0,0,0,0,0,1,1,1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,4];
+				var colBasis = colPlace[thisSquare] * 15;
+				var newNum;
+				var id = document.getElementById(currSquare);
+				do{
+					newNum = colBasis + getNewNum() + 1;
+				}
+				while(usedNum[newNum]);
+				usedNum[newNum] = true;//这句不会和do。。while矛盾？不对布尔值初始化，默认为false
+				id.innerHTML = newNum;
+				document.getElementById(currSquare).className = '';
+				document.getElementById(currSquare).onmousedown = toggleColor;
+				/*if (!usedNum[newNum]){//无法排除可能产生的空格
+					usedNum[newNum] = true;//这句必须要吗？？
+					id.innerHTML = newNum;
+				}*/	
+			}
+			function getNewNum(){
+				return Math.floor(Math.random() * 15);
+			}
+			function anotherCard(){
+				var i = 0;
+				for(i; i<usedNum.length;i++){
+					usedNum[i] = false;//数组的所有数字设置为false,这样所有数字都可以在次使用;
+					/*newCard();
+
+					return false;//阻止a链接的默认行为  无刷新页面重新加载部分数据，有点ajax的影子了*/
+					// console.log(usedNum.length);
+				}
+				newCard();//这两行一定要写在for循环外面，不然点击三次浏览器就运行不过来，卡顿了
+				return false;//阻止a链接的默认行为  无刷新页面重新加载部分数据，有点ajax的影子了
+			}
+			function toggleColor(evt){
+				if(evt){
+					var thisSquare = evt.target;//非IE浏览器确定单击对象
+				}else{
+					var thisSquare = window.event.srcElement;//IE浏览器确定单击对象
+				}
+				if (thisSquare.className =='') {
+					thisSquare.className = 'pickeBG';
+				}else{
+					thisSquare.className = '';
+				} ;
+				checkWin();
+			}
+
+			function checkWin(){
+				var winningOption = -1,//存储用户可能遇到的获胜选项（如果有的话）;
+					setSquares = 0, //存储已经单击的格子;
+					winners = [31, 992, 15360,507904,541729,557328,1083458,2162820,4329736,8519745,8659472,16252928];
+	//规定有效获胜组合的编码值
+				for (var i = 0; i < 24; i++) {
+					var currSquare = 'square' +i;
+					if (document.getElementById(currSquare).className !='') {
+						document.getElementById(currSquare).className = 'pickeBG';
+						setSquares = setSquares | Math.pow(2,i);//按位或计算 setSquares本身和2^i次幂，产生一个表示用户所处状态的变量（共有超过1600万种可能）
+					}
+				}
+				for (var i = 0; i < winners.length; i++) {
+					if ((winners[i] & setSquares) == winners[i]) {
+						winningOption =i;
+					};
+				};
+
+				if (winningOption > -1) {//在这里，将winningOption设置为i，这就是用户匹配的；按位与计算，交集处即是true值，即结果不包含获胜之外的所有选择，而且只要在获胜模式中找到的所有格子也出现在当前的模式中。
+					for (var i = 0; i < 24; i++) {
+						if (winners[winningOption] & Math.pow(2,i)) {
+							currSquare = 'square' + i;
+							document.getElementById(currSquare).className = 'winningBG';
+	 					};
+					}
+				}
+			}
+		</script>
+</body>
+</html>
