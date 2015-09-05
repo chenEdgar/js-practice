@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>拖拽事件</title>
+	<style type="text/css">
+	#div1{
+		width: 200px;height: 200px;background: url(../img/01.jpg);position: absolute;
+	}
+	</style>
+</head>
+<body>
+	<div id="div1"></div>
+	<script >
+		// 拖拽的三大事件
+		// onmousedown,onmousemove,onmouseup;
+		// 
+		// 实现原理：onmousedown确定鼠标按下的坐标值，与对象odiv的offset值；计算鼠标初始位置对象odiv左外边距和上边距的距离（disＸ　与 disY）
+		// onmousemove获取当前鼠标的值（currX 与currY）并计算odiv的偏移坐标值值（crrX - disX,currY - disY）确定对象的当前位置；
+		// onmouseup解除onmousemove和onmouseup，
+		window.onload = function(){
+			odiv = document.getElementById('div1');
+			var disX = 0;
+			var disY = 0;
+			odiv.onmousedown = function(ev){
+				var ev = ev || window.event;//考虑兼容性，IE与非IE浏览器
+					 disX = ev.clientX - odiv.offsetLeft;
+					 disY = ev.clientY - odiv.offsetTop;
+
+				document.onmousemove = function(ev){//onmousemove是在触发onmousedown后
+				//拖拽快速移动后，足球会脱离，原因是onmousemove有一个反应过程，当反应过来时鼠标已经离开足球，故不会执行程序；可以将odiv该为document：可行的原因是onmousemove与onmouseup事件程序只有在onmousedown后执行，且onmouseup后清除，故在位触发odiv.onmousedown时点击document无影响。
+					var ev = ev || window.event;
+							currLeft = ev.clientX - disX;
+							currTop = ev.clientY - disY;
+					 odiv.style.left = currLeft + "px";
+					 odiv.style.top = currTop + "px";
+				}
+				odiv.onmouseup = function() {
+					// odiv.onmousemove = null;
+					document.onmousemove = null;
+					// odiv.onmouseup = null;
+					document.onmouseup = null;
+				}
+			}
+		}
+	</script>
+</body>
+</html>

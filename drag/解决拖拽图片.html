@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>拖拽事件</title>
+	<style type="text/css">
+	#img{
+		position: absolute;
+	}
+	</style>
+</head>
+<body>
+	<img src="../img/01.jpg" id="img">
+	<script >
+		// 拖拽的三大事件
+		// onmousedown,onmousemove,onmouseup;
+		window.onload = function(){
+			oimg = document.getElementById('img');
+			var disX = 0;
+			var disY = 0;
+			oimg.onmousedown = function(ev){
+				var ev = ev || window.event;//考虑兼容性，IE与非IE浏览器
+					 disX = ev.clientX - oimg.offsetLeft;
+					 disY = ev.clientY - oimg.offsetTop;
+
+				document.onmousemove = function(ev){
+					var ev = ev || window.event;
+							currLeft = ev.clientX - disX;
+							currTop = ev.clientY - disY;
+					 oimg.style.left = currLeft + "px";
+					 oimg.style.top = currTop + "px";
+				}
+				oimg.onmouseup = function() {
+					document.onmousemove = null;
+					document.onmouseup = null;
+				}
+				return false; //阻值浏览器对图片的默认行为与拖拽冲突：默认拖拽图片时，原图会静止在原来的位置
+			}
+		}
+	</script>
+</body>
+</html>

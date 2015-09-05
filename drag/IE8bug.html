@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>拖拽事件</title>
+	<style type="text/css">
+	#div1{
+		width: 200px;height: 200px;background: url(../img/01.jpg);position: absolute;
+	}
+	</style>
+</head>
+<body>
+	<div id="div1">选中文字后拖动出现bug</div>
+	<script >
+		// 拖拽的三大事件
+		// onmousedown,onmousemove,onmouseup;
+		// 
+		//原理生成一个透明层将元素隔开，拖拽的是一个层，当鼠标释放时将透明层删去
+		//
+		//setCapture 全局捕获，（生成一个透明层--视窗大小）
+		//releaseCapture 释放全局捕获（删除透明层）
+		window.onload = function(){
+			odiv = document.getElementById('div1');
+			var disX = 0;
+			var disY = 0;
+			odiv.onmousedown = function(ev){
+				var ev = ev || window.event;//考虑兼容性，IE与非IE浏览器
+					 disX = ev.clientX - odiv.offsetLeft;
+					 disY = ev.clientY - odiv.offsetTop;
+					 if (odiv.setCapture) {
+					 		odiv.setCapture();
+					 }
+
+				document.onmousemove = function(ev){
+					var ev = ev || window.event;
+							currLeft = ev.clientX - disX;
+							currTop = ev.clientY - disY;
+					 odiv.style.left = currLeft + "px";
+					 odiv.style.top = currTop + "px";
+				}
+				odiv.onmouseup = function() {
+					document.onmousemove = null;
+					document.onmouseup = null;
+					if (odiv.releaseCapture) {
+						odiv.releaseCapture();
+					}
+				}
+			return false;
+			}
+		}
+	</script>
+</body>
+</html>

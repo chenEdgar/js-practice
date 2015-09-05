@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>小球碰撞</title>
+	<style type="text/css">
+		#div1{
+			width: 200px;height: 200px;position: absolute;
+		}
+	</style>
+</head>
+<body>
+	<div id="div1"><img src="../img/01.jpg"></div>
+
+	<script>
+		window.onload = function(){
+			var timer = null,
+					ispeedT = 10,
+					ispeedL = 10,//匀速
+					odiv1 = document.getElementById('div1');
+
+
+			move();
+			console.log('111');
+			function move(){
+				timer = setInterval(function(){
+							// ispeedL = 10,
+							// ispeedT = 10,//此处设置10，初始设置ispeedT = 0,ispeedL = 0,小球运动到右下角后不反弹：：从console值看出，ispeed*值为10，不会变化，每次执行定时器循环式先给ispeed值10，故不会反向
+							var L = odiv1.offsetLeft+ ispeedL,
+							T = odiv1.offsetTop + ispeedT;
+							// console.log(odiv1.offsetTop,ispeedT);
+					if (T > document.documentElement.clientHeight - odiv1.offsetHeight) {
+						T = document.documentElement.clientHeight - odiv1.offsetHeight;
+						ispeedT *= -1;//临界点设置反向运动
+					}else if(T < 0){
+						T = 0;
+						ispeedT *= -1;
+					}
+
+					if (L > document.documentElement.clientWidth - odiv1.offsetWidth) {
+						L = document.documentElement.clientWidth - odiv1.offsetWidth;
+						ispeedL *= -1;
+						console.log(ispeedL)
+					}else if (L < 0) {
+						L = 0;
+						ispeedL *= -1;
+					};
+					div1.style.left = L + 'px';
+					div1.style.top = T + 'px';
+				},50)
+			}
+		}
+	</script>
+</body>
+</html>

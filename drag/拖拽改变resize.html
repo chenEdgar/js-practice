@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>拖拽resize</title>
+	<style type="text/css">
+	#div1{
+		width: 200px;height: 200px;position: relative;background: #002244;
+	}
+	#div2{
+		width: 40px;height: 40px;position: absolute;right: 0;bottom: 0;background: yellow;
+	}
+	</style>
+</head>
+<body>
+	<div id="div1">
+		<div id="div2"></div>
+	</div>
+
+	<script type="text/javascript">
+		window.onload = function(){
+			odiv2 = document.getElementById('div2');
+			odiv1 = document.getElementById('div1');
+			var initW = 0,//获取div1的初始元素宽高；不用odiv1.width();
+					initH = 0,
+					disX = 0,
+					disY = 0;
+			// console.log(initW,initH);
+			div2.onmousedown = function(ev){
+				var ev = ev || window.event;
+						 disX = ev.clientX;
+						 disY = ev.clientY;
+						 initW = odiv1.offsetWidth;
+						 initH = odiv1.offsetHeight,
+						 // console.log(disX,disY);
+				document.onmousemove = function(ev){
+					var ev = ev || window.event;
+						var W = ev.clientX - disX +initW;
+						var H = ev.clientY - disY +initH;
+						if (W < 100) W = 100;
+						if (W > 800)  W = 800;
+						if (H < 100) H = 100;
+						if (H > 400) H = 400;
+						odiv1.style.width = W + 'px';
+						odiv1.style.height = H + 'px';
+				}
+				document.onmouseup = function(){
+					document.onmousemove = null;
+					document.onmmouseup = null;
+
+				}
+			}
+		}
+	</script>
+</body>
+</html>
