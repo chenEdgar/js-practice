@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>拖拽事件</title>
+	<style type="text/css">
+	#div1{
+		width: 200px;height: 200px;background: url(../img/01.jpg);position: absolute;
+	}
+	</style>
+</head>
+<body>
+	<div id="div1"></div>
+	<script >
+		
+		window.onload = function(){
+			odiv = document.getElementById('div1');
+			var disX = 0;
+			var disY = 0;
+			var preX = 0;
+			var preY = 0;
+			var lastX = 0;
+			var lastY = 0;
+			var ispeed = 0;
+			var timer = null;
+			odiv.onmousedown = function(ev){
+				var ev = ev || window.event;//考虑兼容性，IE与非IE浏览器
+					 disX = ev.clientX - odiv.offsetLeft;
+					 disY = ev.clientY - odiv.offsetTop;
+					 preX= ev.clientX;
+					 preY= ev.clientY;
+					 clearInterval(timer)
+					 console.log();
+
+				document.onmousemove = function(ev){
+					var ev = ev || window.event;
+							// currLeft = ev.clientX - disX;
+							// currTop = ev.clientY - disY;
+							ispeedX = ev.clientX - preX;//第二点减去前第一个点坐标
+							ispeedY = ev.clientY - preY;
+							preX = ev.clientX;//将当前坐标点赋值给初始点，使其成为倒数第二个点：
+							preY = ev.clientY;
+					 odiv.style.left = odiv.offsetLeft + ispeedX + "px";
+					 odiv.style.top = odiv.offsetTop + ispeedY + "px";
+				}
+				odiv.onmouseup = function() {
+					document.onmousemove = null;
+					document.onmouseup = null;
+					move();
+				}
+			}
+
+			function move(){
+				timer = setInterval(function(ev){
+					ispeedY += 3;
+					var ev = ev || window.event;
+					var L = odiv.offsetLeft + ispeedX;
+					var T = odiv.offsetTop + ispeedY;
+					if (L > document.documentElement.clientWidth - odiv.clientWidth) {
+						L = document.documentElement.clientWidth - odiv.clientWidth;
+						ispeedX *= -1;
+						ispeedX *= 0.75;
+					}else if(L < 0){
+						L = 0;
+						ispeedX *= -1;
+						ispeedX *= 0.75;
+					}
+					if (T > document.documentElement.clientHeight - odiv.clientHeight) {
+						T = document.documentElement.clientHeight - odiv.clientHeight;
+						ispeedY *= -1;
+						ispeedY *= 0.75;
+						ispeedX *= 0.75;//水平发生摩擦减速的（与视窗两边相撞后减速）可能性要小，故垂直相撞后减小水平速度，让它扔出去后更快的停止下来
+					}else if (T < 0){
+						T = 0;
+						ispeedY *= -1;
+						ispeedY *= 0.75;
+						ispeedX *= 0.75;
+					}
+					odiv.style.left = L + "px";
+					odiv.style.top = T + "px";
+				},30)
+			}
+		}
+	</script>
+</body>
+</html>

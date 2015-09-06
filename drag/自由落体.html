@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>自由落体</title>
+</head>
+<body>
+	<div id="div1" style="width: 200px; height: 200px; background: red; position: absolute"></div>
+
+	<script>
+		window.onload = function(){
+			var odiv = document.getElementById('div1');
+			var timer = null;
+			var ispeed = 0;
+			var disX = 0,
+					disY = 0,
+					T= 0,
+					L = 0;
+			move();
+
+			function move(){
+				timer = setInterval(function(){
+					ispeed += 3;
+					disY = odiv.offsetTop;
+					disX = odiv.offsetLeft;
+					// alert(disY)
+					T = disY + ispeed;
+					if (T > document.documentElement.clientHeight - odiv.offsetHeight) {
+						T = document.documentElement.clientHeight - odiv.offsetHeight;//没有设置最终还是会走到浏览器可视区一下
+						ispeed *= -1 * 0.75;
+						// console.log(document.documentElement.clientHeight,odiv.offsetHeight);
+					}
+					// if (ispeed == 0) {
+					// 	clearInterval(timer)
+					// };
+					console.log(ispeed)
+					odiv.style.left = disX + "px";
+					odiv.style.top =  T + "px";
+				},100)
+			}
+		}
+
+	</script>
+</body>
+</html>
