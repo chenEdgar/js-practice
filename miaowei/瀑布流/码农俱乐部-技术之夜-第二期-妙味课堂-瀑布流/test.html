@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>无标题文档</title>
+<style>
+* {margin: 0; padding: 0;}
+#container { border: 1px solid red; position: relative; margin: 50px auto 0; }
+#container img { position: absolute;}
+
+#loader { width: 100%; height: 60px; background: url('loader.gif') no-repeat center #FFF; position: fixed; bottom: 0; left: 0;  display: none;}
+</style>
+<script src="jquery-1.9.1.min.js"></script>
+<script>
+/*
+固定列：浮动布局
+定位
+*/
+
+$(function(){
+	var container = $('#container'),
+			icellW = 250,
+			i = 0,
+			ispace = 10,
+			iCells = 0,
+			iOuterWidth = icellW + ispace,
+			sUrl = 'http://www.wookmark.com/api/json/popular?callback=?',
+			arrT = [],
+			arrL = [],
+			iBtn = true,
+			iPage = 0;
+
+		// function newIma(){
+		// 	var img = document.createElement('img');
+		// 	img.src = '';
+		// 	img.style.width = icellW;
+		// 	img.style.height = 'auto';
+		// 	container.append(img);
+		// 	// alert(img)
+		// }
+		// newIma();
+
+		function setCell(){
+			// var iCells =Math.floor( $(window).width() / iOuterWidth);//错误地方,将iCells设置为了局部变量，使for循环没有执行，因为iCells全局设置为0
+				 iCells =Math.floor( $(window).width() / iOuterWidth);
+			// console.log(iCells);
+			if (iCells < 2) {
+				iCells = 2;
+			}else if (iCells > 5) {
+				iCells = 5;
+			}
+			container.css('width',iCells * iOuterWidth) - 10;
+			// console.log(container.width());
+		}
+		setCell();
+// alert(iCells)//0
+		for (var i = 0; i < iCells; i++) {
+			arrT[i] = 0;
+			arrL[i] = iOuterWidth * i;
+			// alert()//没有进来！！！！！
+		}
+		// console.log(iCells);
+
+		function getdata(){
+			if (iBtn == false) {//!iBtn
+				return;
+			}
+			iBtn = false;
+			iPage++;
+			$.ajax({
+				url: sUrl,
+				dataType: 'json',
+				data: {page:iPage},
+				success: function(jData){
+					// alert('数据获取成功')
+					$('#loader').show();
+					
+					$.each(jData,function(index,obj){
+						var oImg = $('<img/>');
+						var iHeight = obj.height * (icellW/obj.width);
+						// console.log('iHeight'+iHeight,'icellW' + icellW);
+						oImg.width(icellW);
+						oImg.height(iHeight);
+						
+						// oImg.css({
+						// 	'height': iHeight,
+						// 	'width': icellW
+						// })
+						// console.log(oImg.width(icellW));
+						// console.log('imgW'+oImg.width(icellW),'imgH'+ oImg.height(iHeight));//返回jquery对象本省		
+						var _index = getMin();
+						oImg.offset({top:arrT[_index],left:arrL[_index]});
+						arrT[_index] += iHeight +10;
+
+						container.append(oImg);
+
+						var objImg = new Image();
+						objImg.onload = function(){
+							oImg.attr('src',this.src);//this这两处不懂
+						}
+						objImg.src = obj.preview;//这两处不懂
+
+						setTimeout(function(){
+							$('#loader').hide();
+						},1000)//直接设置$('#loader').hide(1000);
+						iBtn = true;
+					});
+				}
+				})
+		}
+		getdata();
+		// arrT = [11,23,5,7]
+
+		function getMin(){
+			var v = arrT[0],
+					_index = 0;
+			for (var i = 0; i < arrT.length; i++) {
+				if (v > arrT[i]) {
+					v = arrT[i];
+					_index = i;
+				}
+			}
+			return _index;
+		}
+
+		$(window).on('scroll',function(){
+			var _index = getMin();
+			iH = $(window).height() + $(document).scrollTop();
+
+			if (iH > arrT[_index] + 50) {
+				getdata();
+			}
+		})
+
+		$(window).on('resize',function(){
+			var iLen = iCells;
+			setCell();
+			if (iLen == iCells) {
+				return ;
+			}
+				arrL = [];
+				arrT = [];
+				console.log(iCells)
+				for (var i = 0; i <iCells; i++) {//错误for(var i = 0; i < iCells.length; i++),iCell不是对象，是一个"num";
+					arrT[i] = 0;
+					arrL[i] = iOuterWidth * i ;
+	 			}
+
+	 			container.find('img').each(function(){
+	 				var _index = getMin();
+	 				$(this).animate({
+						left	:	arrL[_index],
+						top		:	arrT[_index]
+					}, 1000);
+						arrT[_index] += $(this).height() + 10;
+	 				})
+
+		})
+
+})
+</script>
+</head>
+
+<body>
+	<div id="container"></div>
+    <div id="loader"></div>
+</body>
+</html>
